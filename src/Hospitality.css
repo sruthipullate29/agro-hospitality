@@ -1,0 +1,54 @@
+.hospitality-page {
+  padding: 30px;
+  background: #eef5ff;
+  min-height: 100vh;
+}
+
+.hospitality-page h1 {
+  text-align: center;
+  color: #0057b8;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px;
+}
+
+.search-box input {
+  width: 400px;
+  padding: 12px;
+}
+
+.search-box button {
+  background: #0057b8;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+}
+
+.hotel-card {
+  display: flex;
+  background: white;
+  margin: 20px auto;
+  max-width: 900px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.hotel-card img {
+  width: 300px;
+}
+
+.hotel-info {
+  padding: 20px;
+}
+
+.hotel-info button {
+  background: #0071c2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+}

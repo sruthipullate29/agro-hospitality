@@ -1,0 +1,46 @@
+.agro-page {
+  padding: 30px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.agro-page h1 {
+  text-align: center;
+  color: #2e7d32;
+}
+
+.search {
+  width: 50%;
+  padding: 12px;
+  display: block;
+  margin: 20px auto;
+  border-radius: 8px;
+  border: 1px solid gray;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.product-card button {
+  background: green;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
