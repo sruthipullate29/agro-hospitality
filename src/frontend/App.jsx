@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
-import Agro from "./agro";
+import Agro from "./Agro";
 import Hospitality from "./Hospitality";
 import Founder from "./Founder";
 import Booking from "./Booking";

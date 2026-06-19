@@ -5,10 +5,45 @@ function Booking() {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [guests, setGuests] = useState("");
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
     setPhone(value.slice(0, 10));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const bookingData = {
+      name,
+      phone,
+      checkIn,
+      checkOut,
+      guests
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Booking Confirmed!");
+      } else {
+        alert(data.message);
+      }
+
+    } catch (err) {
+      alert("Server not running");
+    }
   };
 
   return (
@@ -17,13 +52,15 @@ function Booking() {
 
         <h1 className="booking-title">Booking Form</h1>
 
-        <form>
+        <form onSubmit={handleSubmit}>
 
           {/* NAME */}
           <label>Guest Name</label>
           <input
             type="text"
             placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
 
@@ -74,6 +111,8 @@ function Booking() {
             type="number"
             min="1"
             max="10"
+            value={guests}
+            onChange={(e) => setGuests(e.target.value)}
             required
           />
 
@@ -91,6 +130,7 @@ function Booking() {
           </button>
 
         </form>
+
       </div>
     </div>
   );

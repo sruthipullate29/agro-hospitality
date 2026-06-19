@@ -1,6 +1,5 @@
 import "./Founder.css";
 import { Link } from "react-router-dom";
-import founderImg from "./assets/varun-annaya.jpg";
 
 function Founder() {
   return (
@@ -9,7 +8,7 @@ function Founder() {
 
         <img
           className="founder-image"
-          src={founderImg}
+          src="/varun-annaya.jpg"
           alt="Founder"
         />
 
