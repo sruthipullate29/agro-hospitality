@@ -52,3 +52,12 @@
   border: none;
   padding: 10px 20px;
 }
+
+.hotel-back {
+  display: block;
+  text-align: center;
+  margin: 30px auto;
+  color: #0071c2;
+  font-weight: bold;
+  text-decoration: none;
+}

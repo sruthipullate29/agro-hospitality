@@ -9,6 +9,15 @@
   color: #2e7d32;
 }
 
+.agro-back {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+  color: #2e7d32;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 .search {
   width: 50%;
   padding: 12px;

@@ -1,0 +1,105 @@
+.confirm-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafc;
+    font-family: Arial, sans-serif;
+  }
+  
+  .confirm-card {
+    width: 650px;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* TITLE */
+  .title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #000000;
+  }
+  
+  .tick {
+    font-size: 26px;
+    color: #22c55e;
+  }
+  
+  /* BOOKING ID */
+  .booking-id-box {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 20px 0;
+  }
+  
+  /* DETAILS */
+  .details {
+    text-align: left;
+    margin-top: 25px;
+  }
+  
+  .details h3 {
+    color: #2563eb;
+    margin-bottom: 10px;
+  }
+  
+  .details p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #374151;
+  }
+  
+  /* BUTTONS */
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+  }
+  
+  /* SAME SIZE BUTTONS */
+  .print-btn,
+  .home-btn {
+    width: 180px;
+    height: 44px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* PRINT BUTTON */
+  .print-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+  }
+  
+  .print-btn:hover {
+    background: #1d4ed8;
+  }
+  
+  /* HOME BUTTON */
+  .home-btn {
+    background: #22c55e;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .home-btn:hover {
+    background: #16a34a;
+  }

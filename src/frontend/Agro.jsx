@@ -1,29 +1,8 @@
+import { Link } from "react-router-dom";
+import { products } from "./data/products";
 import "./Agro.css";
 
 function Agro() {
-  const products = [
-    {
-      name: "Premium Basmati Rice",
-      price: "₹1,200 / Bag",
-      image: "https://via.placeholder.com/250"
-    },
-    {
-      name: "Organic Turmeric",
-      price: "₹500 / Kg",
-      image: "https://via.placeholder.com/250"
-    },
-    {
-      name: "Coffee Beans",
-      price: "₹800 / Kg",
-      image: "https://via.placeholder.com/250"
-    },
-    {
-      name: "Red Chilli",
-      price: "₹450 / Kg",
-      image: "https://via.placeholder.com/250"
-    }
-  ];
-
   return (
     <div className="agro-page">
       <h1>🌾 Varun Agro Exports</h1>
@@ -35,15 +14,19 @@ function Agro() {
       />
 
       <div className="product-grid">
-        {products.map((product, index) => (
-          <div className="product-card" key={index}>
+        {products.map((product) => (
+          <div className="product-card" key={product.id}>
             <img src={product.image} alt={product.name} />
             <h3>{product.name}</h3>
             <p>{product.price}</p>
-            <button>View Details</button>
+            <Link to={`/view/${product.id}`}>
+              <button type="button">View Details</button>
+            </Link>
           </div>
         ))}
       </div>
+
+      <Link to="/" className="agro-back">← Back to Home</Link>
     </div>
   );
 }

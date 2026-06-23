@@ -1,27 +1,31 @@
 import "./Booking.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Booking() {
+  const navigate = useNavigate();
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [guests, setGuests] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
-  const [guests, setGuests] = useState("");
-
-  const handlePhoneChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setPhone(value.slice(0, 10));
-  };
+  const [slot, setSlot] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const bookingData = {
       name,
+      email,
       phone,
+      guests,
       checkIn,
       checkOut,
-      guests
+      slot
     };
 
     try {
@@ -35,8 +39,10 @@ function Booking() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        alert("Booking Confirmed!");
+      if (data.success) {
+        navigate("/booking-confirmed", {
+          state: data.booking
+        });
       } else {
         alert(data.message);
       }
@@ -48,83 +54,111 @@ function Booking() {
 
   return (
     <div className="booking-page">
+
       <div className="booking-card">
 
-        <h1 className="booking-title">Booking Form</h1>
+        <h1 className="booking-title">
+          Hotel Reservation
+        </h1>
+
+        <p className="booking-subtitle">
+          Complete your booking details
+        </p>
 
         <form onSubmit={handleSubmit}>
 
-          {/* NAME */}
           <label>Guest Name</label>
           <input
             type="text"
-            placeholder="Enter your name"
+            placeholder="Enter your full name"
+            required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
           />
 
-          {/* PHONE */}
+          <label>Email Address</label>
+          <input
+            type="email"
+            placeholder="example@gmail.com"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
           <label>Phone Number</label>
           <input
             type="tel"
-            placeholder="Enter 10-digit mobile number"
-            value={phone}
-            onChange={handlePhoneChange}
+            placeholder="10 digit mobile number"
             maxLength="10"
             required
+            value={phone}
+            onChange={(e) =>
+              setPhone(e.target.value.replace(/\D/g, ""))
+            }
           />
 
-          {/* DATE ROW */}
+          <label>Guests</label>
+          <input
+            type="number"
+            min="1"
+            max="20"
+            required
+            value={guests}
+            onChange={(e) => setGuests(e.target.value)}
+          />
+
           <div className="date-row">
 
             <div className="date-box">
-              <label>Check-In Date</label>
+              <label>Check In</label>
               <input
                 type="date"
+                min={today}
+                required
                 value={checkIn}
-                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) => {
                   setCheckIn(e.target.value);
                   setCheckOut("");
                 }}
-                required
               />
             </div>
 
             <div className="date-box">
-              <label>Check-Out Date</label>
+              <label>Check Out</label>
               <input
                 type="date"
-                value={checkOut}
-                min={checkIn || new Date().toISOString().split("T")[0]}
-                onChange={(e) => setCheckOut(e.target.value)}
+                min={checkIn || today}
                 required
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
               />
             </div>
 
           </div>
 
-          {/* GUESTS */}
-          <label>Number of Guests</label>
-          <input
-            type="number"
-            min="1"
-            max="10"
-            value={guests}
-            onChange={(e) => setGuests(e.target.value)}
-            required
-          />
+          <label>Select Slot</label>
 
-          {/* SLOT */}
-          <label>Select Time Slot</label>
-          <select required>
-            <option>12 Hours (9 AM - 9 PM)</option>
-            <option>12 Hours (9 PM - 9 AM)</option>
-            <option>24 Hours Stay</option>
+          <select
+            required
+            value={slot}
+            onChange={(e) => setSlot(e.target.value)}
+          >
+            <option value="">Choose Slot</option>
+
+            <option value="12 Hours (9 AM - 9 PM)">
+              12 Hours (9 AM - 9 PM)
+            </option>
+
+            <option value="12 Hours (9 PM - 9 AM)">
+              12 Hours (9 PM - 9 AM)
+            </option>
+
+            <option value="24 Hours Stay">
+              24 Hours Stay
+            </option>
+
           </select>
 
-          {/* BUTTON */}
           <button type="submit">
             Confirm Booking
           </button>
@@ -132,6 +166,7 @@ function Booking() {
         </form>
 
       </div>
+
     </div>
   );
 }

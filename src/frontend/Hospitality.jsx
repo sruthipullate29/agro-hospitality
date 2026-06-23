@@ -49,6 +49,8 @@ function Hospitality() {
           </div>
         ))}
       </div>
+
+      <Link to="/" className="hotel-back">← Back to Home</Link>
     </div>
   );
 }
