@@ -81,6 +81,7 @@ function Booking() {
           </select>
 
           <button type="submit">Confirm Booking</button>
+          <Link to="/">ConfirmBooking</Link>
 
         </form>
 
