@@ -7,166 +7,84 @@ function Booking() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [guests, setGuests] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [slot, setSlot] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    guests: "",
+    checkIn: "",
+    checkOut: "",
+    slot: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const bookingData = {
-      name,
-      email,
-      phone,
-      guests,
-      checkIn,
-      checkOut,
-      slot
-    };
+    const res = await fetch("http://localhost:5000/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
 
-    try {
-      const res = await fetch("http://localhost:5000/book", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(bookingData)
-      });
+    const data = await res.json();
 
-      const data = await res.json();
-
-      if (data.success) {
-        navigate("/booking-confirmed", {
-          state: data.booking
-        });
-      } else {
-        alert(data.message);
-      }
-
-    } catch (err) {
-      alert("Server not running");
+    if (data.success) {
+      navigate("/booking-confirmed", { state: data.booking });
+    } else {
+      alert(data.message);
     }
   };
 
   return (
     <div className="booking-page">
-
       <div className="booking-card">
 
-        <h1 className="booking-title">
-          Hotel Reservation
-        </h1>
-
-        <p className="booking-subtitle">
-          Complete your booking details
-        </p>
+        <h1 className="booking-title">Hotel Reservation</h1>
+        <p className="booking-subtitle">Complete your booking details</p>
 
         <form onSubmit={handleSubmit}>
 
-          <label>Guest Name</label>
-          <input
-            type="text"
-            placeholder="Enter your full name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <label>Name</label>
+          <input name="name" onChange={handleChange} required />
 
-          <label>Email Address</label>
-          <input
-            type="email"
-            placeholder="example@gmail.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <label>Email</label>
+          <input name="email" type="email" onChange={handleChange} required />
 
-          <label>Phone Number</label>
-          <input
-            type="tel"
-            placeholder="10 digit mobile number"
-            maxLength="10"
-            required
-            value={phone}
-            onChange={(e) =>
-              setPhone(e.target.value.replace(/\D/g, ""))
-            }
-          />
+          <label>Phone</label>
+          <input name="phone" maxLength="10" onChange={handleChange} required />
 
           <label>Guests</label>
-          <input
-            type="number"
-            min="1"
-            max="20"
-            required
-            value={guests}
-            onChange={(e) => setGuests(e.target.value)}
-          />
+          <input name="guests" type="number" min="1" onChange={handleChange} required />
 
-          <div className="date-row">
-
-            <div className="date-box">
+          <div className="row">
+            <div>
               <label>Check In</label>
-              <input
-                type="date"
-                min={today}
-                required
-                value={checkIn}
-                onChange={(e) => {
-                  setCheckIn(e.target.value);
-                  setCheckOut("");
-                }}
-              />
+              <input name="checkIn" type="date" min={today} onChange={handleChange} required />
             </div>
 
-            <div className="date-box">
+            <div>
               <label>Check Out</label>
-              <input
-                type="date"
-                min={checkIn || today}
-                required
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-              />
+              <input name="checkOut" type="date" min={form.checkIn || today} onChange={handleChange} required />
             </div>
-
           </div>
 
-          <label>Select Slot</label>
-
-          <select
-            required
-            value={slot}
-            onChange={(e) => setSlot(e.target.value)}
-          >
-            <option value="">Choose Slot</option>
-
-            <option value="12 Hours (9 AM - 9 PM)">
-              12 Hours (9 AM - 9 PM)
-            </option>
-
-            <option value="12 Hours (9 PM - 9 AM)">
-              12 Hours (9 PM - 9 AM)
-            </option>
-
-            <option value="24 Hours Stay">
-              24 Hours Stay
-            </option>
-
+          <label>Slot</label>
+          <select name="slot" onChange={handleChange} required>
+            <option value="">Select Slot</option>
+            <option>12 Hours (9 AM - 9 PM)</option>
+            <option>12 Hours (9 PM - 9 AM)</option>
+            <option>24 Hours Stay</option>
           </select>
 
-          <button type="submit">
-            Confirm Booking
-          </button>
+          <button type="submit">Confirm Booking</button>
 
         </form>
 
       </div>
-
     </div>
   );
 }
