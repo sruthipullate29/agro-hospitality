@@ -11,7 +11,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path="/" element={<Home />} />
 
         <Route path="/agro" element={<Agro />} />
@@ -22,8 +21,7 @@ function App() {
 
         <Route path="/founder" element={<Founder />} />
 
-        <Route path="/booking-confirmed" element={<ConfirmBooking />} />
-
+        <Route path="/confirmbooking" element={<ConfirmBooking />} />
       </Routes>
     </BrowserRouter>
   );

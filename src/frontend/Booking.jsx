@@ -1,80 +1,159 @@
 import "./Booking.css";
-import { useState } from "react"; 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
- function Booking() { 
-  const navigate = useNavigate(); 
-  const today = new Date().toISOString().split("T")[0]; 
-  const [form, setForm] = useState({ name: "", email: "", phone: "", guests: "", checkIn: "", checkOut: "", slot: "", });  
 
+function Booking() {
+  const navigate = useNavigate();
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    guests: "",
+    checkIn: "",
+    checkOut: "",
+    slot: "",
+  });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    setLoading(true);
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:5000/book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    if (data.success) {
-      navigate("/booking-confirmed", { state: data.booking });
-    } else {
-      alert(data.message);
+      const data = await res.json();
+
+      if (data.success) {
+        navigate("/confirmbooking", {
+          state: data.booking,
+        });
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Booking Error:", error);
+      alert("Unable to connect to server.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="booking-page">
       <div className="booking-card">
-
         <h1 className="booking-title">Hotel Reservation</h1>
-        <p className="booking-subtitle">Complete your booking details</p>
+
+        <p className="booking-subtitle">
+          Complete your booking details
+        </p>
 
         <form onSubmit={handleSubmit}>
-
           <label>Name</label>
-          <input name="name" onChange={handleChange} required />
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
           <label>Email</label>
-          <input name="email" type="email" onChange={handleChange} required />
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
           <label>Phone</label>
-          <input name="phone" maxLength="10" onChange={handleChange} required />
+          <input
+            type="tel"
+            name="phone"
+            maxLength="10"
+            value={form.phone}
+            onChange={handleChange}
+            required
+          />
 
           <label>Guests</label>
-          <input name="guests" type="number" min="1" onChange={handleChange} required />
+          <input
+            type="number"
+            name="guests"
+            min="1"
+            value={form.guests}
+            onChange={handleChange}
+            required
+          />
 
           <div className="row">
             <div>
               <label>Check In</label>
-              <input name="checkIn" type="date" min={today} onChange={handleChange} required />
+              <input
+                type="date"
+                name="checkIn"
+                min={today}
+                value={form.checkIn}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div>
               <label>Check Out</label>
-              <input name="checkOut" type="date" min={form.checkIn || today} onChange={handleChange} required />
+              <input
+                type="date"
+                name="checkOut"
+                min={form.checkIn || today}
+                value={form.checkOut}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
 
           <label>Slot</label>
-          <select name="slot" onChange={handleChange} required>
+          <select
+            name="slot"
+            value={form.slot}
+            onChange={handleChange}
+            required
+          >
             <option value="">Select Slot</option>
-            <option>12 Hours (9 AM - 9 PM)</option>
-            <option>12 Hours (9 PM - 9 AM)</option>
-            <option>24 Hours Stay</option>
+            <option value="12 Hours (9 AM - 9 PM)">
+              12 Hours (9 AM - 9 PM)
+            </option>
+            <option value="12 Hours (9 PM - 9 AM)">
+              12 Hours (9 PM - 9 AM)
+            </option>
+            <option value="24 Hours Stay">
+              24 Hours Stay
+            </option>
           </select>
 
-          <button type="submit">Confirm Booking</button>
-          <Link to="/">ConfirmBooking</Link>
-
+          <button type="submit" disabled={loading}>
+            {loading ? "Processing..." : "Confirm Booking"}
+          </button>
         </form>
-
       </div>
     </div>
   );
