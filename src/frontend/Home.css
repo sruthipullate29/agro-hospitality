@@ -1,6 +1,6 @@
 .home {
   min-height: 100vh;
-  background: #0f172a;
+  background: #18233c;
   color: white;
 }
 
@@ -9,8 +9,19 @@
   padding: 30px;
   font-size: 2.5rem;
   margin: 0;
+  color: #ffffff;
 }
-
+.h1{
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 30px;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom right, #1b5e20, #4caf50);
+  border-radius: 10px;
+}
 .sections {
   display: flex;
   min-height: 60vh;
