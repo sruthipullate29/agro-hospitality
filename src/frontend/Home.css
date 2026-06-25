@@ -1,102 +1,180 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Times New Roman', Times, serif;
+}
+
 .home {
   min-height: 100vh;
-  background: #18233c;
-  color: rgb(240, 229, 229);
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e293b 50%,
+    #334155 100%
+  );
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 50px 20px 30px;
 }
 
 .title {
+  color: #ffffff !important;
+  font-size: 68px;
   text-align: center;
-  padding: 30px;
-  font-size: 2.5rem;
-  margin: 0;
-  color: #ffffff;
-}
-.h1{
-  color: #ffffff;
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin: 0;
-  padding: 30px;
-  text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(to bottom right, #1b5e20, #4caf50);
-  border-radius: 10px;
-}
-.sections {
-  display: flex;
-  min-height: 60vh;
+  text-shadow: 2px 2px 4px rgba(187, 172, 172, 0.5);
 }
 
-.agro,
-.hospitality {
+.subtitle {
+  color: #e2e8f0;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Main Section */
+.sections {
   flex: 1;
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  gap: 25px;
+  padding: 30px;
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.card {
+  flex: 1;
+  min-height: 380px;
+  border-radius: 24px;
   padding: 40px 30px;
   text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: translateY(-8px);
 }
 
 .agro {
-  background: linear-gradient(to bottom right, #1b5e20, #4caf50);
+  background: linear-gradient(135deg, #1b5e20, #4caf50);
 }
 
 .hospitality {
-  background: linear-gradient(to bottom right, #0d47a1, #42a5f5);
+  background: linear-gradient(135deg, #0d47a1, #42a5f5);
 }
 
-.agro h2,
-.hospitality h2 {
-  font-size: 2rem;
-  margin-bottom: 12px;
+.card h2 {
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  margin-bottom: 20px;
 }
 
-.agro p,
-.hospitality p {
-  max-width: 320px;
-  margin-bottom: 8px;
-  opacity: 0.95;
+.card p {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 30px;
 }
 
-.sections button {
-  margin-top: 20px;
-  padding: 12px 28px;
+.card button {
+  padding: 14px 28px;
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 12px;
   background: white;
   color: #111827;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.sections button:hover {
+.card button:hover {
   transform: scale(1.05);
 }
 
-.sections a {
+.card a {
   text-decoration: none;
 }
-
 .founder-link {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .founder-link a {
   text-decoration: none;
-  font-weight: bold;
-  color: #0d47a1;
+  background: white;
+  color: #111827;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Tablet */
+@media (max-width: 1024px) {
+  .sections {
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .card {
+    padding: 30px 20px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .sections {
     flex-direction: column;
+  }
+
+  .card {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .hero {
+    padding: 40px 15px;
+  }
+
+  .founder-link {
+    position: static;
+    text-align: center;
+    margin: 25px 0;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .card {
+    padding: 25px 15px;
+  }
+
+  .card button {
+    width: 100%;
   }
 }

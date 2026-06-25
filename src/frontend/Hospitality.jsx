@@ -43,8 +43,8 @@ function Hospitality() {
               <p>{hotel.rating}</p>
 
               <Link to="/booking">
-  <button>Book Now</button>
-</Link>
+                <button>Book Now</button>
+              </Link>
             </div>
           </div>
         ))}

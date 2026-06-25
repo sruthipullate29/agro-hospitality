@@ -22,10 +22,7 @@ function App() {
 
         <Route path="/founder" element={<Founder />} />
 
-        <Route
-          path="/booking-confirmed"
-          element={<ConfirmBooking />}
-        />
+        <Route path="/booking-confirmed" element={<ConfirmBooking />} />
 
       </Routes>
     </BrowserRouter>

@@ -1,21 +1,11 @@
 import "./Booking.css";
-import { useState } from "react";
+import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
+ function Booking() { 
+  const navigate = useNavigate(); 
+  const today = new Date().toISOString().split("T")[0]; 
+  const [form, setForm] = useState({ name: "", email: "", phone: "", guests: "", checkIn: "", checkOut: "", slot: "", });  
 
-function Booking() {
-  const navigate = useNavigate();
-
-  const today = new Date().toISOString().split("T")[0];
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    guests: "",
-    checkIn: "",
-    checkOut: "",
-    slot: "",
-  });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
