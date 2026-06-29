@@ -1,78 +1,100 @@
-import { useLocation, Link } from "react-router-dom";
 import "./ConfirmBooking.css";
+import { useLocation, Link } from "react-router-dom";
 
 function ConfirmBooking() {
   const location = useLocation();
   const booking = location.state;
 
+  if (!booking) {
+    return (
+      <div className="confirm-page">
+        <div className="confirm-card">
+          <h1 className="title">
+            <span className="tick">✔</span>
+            Booking Confirmed
+          </h1>
+
+          <div className="no-booking">
+            <h2>No Booking Found</h2>
+            <p>Please make a booking first.</p>
+
+            <Link to="/" className="home-btn">
+              Go To Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="confirm-page">
       <div className="confirm-card">
+
         <h1 className="title">
-          <span className="tick">✔ </span>
+          <span className="tick">✔</span>
           Booking Confirmed
         </h1>
 
-        {!booking ? (
-          <>
-            <h2>No Booking Found</h2>
+        <p className="success-message">
+          Thank you for choosing us. Your reservation has been confirmed successfully.
+        </p>
 
-            <Link to="/" className="home-btn">
-              Go Home
-            </Link>
-          </>
-        ) : (
-          <>
-            <h2 className="booking-id-box">
-              Booking ID: {booking.bookingId}
-            </h2>
+        <div className="booking-id-box">
+          Booking ID: {booking.bookingId}
+        </div>
 
-            <div className="details">
-              <h3>Booking Details</h3>
+        <div className="details">
+          <h3>Booking Details</h3>
 
-              <p>
-                <b>Name:</b> {booking.name}
-              </p>
+          {booking.hotelName && (
+            <p>
+              <strong>Hotel:</strong> {booking.hotelName}
+            </p>
+          )}
 
-              <p>
-                <b>Email:</b> {booking.email}
-              </p>
+          <p>
+            <strong>Name:</strong> {booking.name}
+          </p>
 
-              <p>
-                <b>Phone:</b> {booking.phone}
-              </p>
+          <p>
+            <strong>Email:</strong> {booking.email}
+          </p>
 
-              <p>
-                <b>Guests:</b> {booking.guests}
-              </p>
+          <p>
+            <strong>Phone:</strong> {booking.phone}
+          </p>
 
-              <p>
-                <b>Check In:</b> {booking.checkIn}
-              </p>
+          <p>
+            <strong>Guests:</strong> {booking.guests}
+          </p>
 
-              <p>
-                <b>Check Out:</b> {booking.checkOut}
-              </p>
+          <p>
+            <strong>Check In:</strong> {booking.checkIn}
+          </p>
 
-              <p>
-                <b>Slot:</b> {booking.slot}
-              </p>
-            </div>
+          <p>
+            <strong>Check Out:</strong> {booking.checkOut}
+          </p>
 
-            <div className="btn-group">
-              <button
-                className="print-btn"
-                onClick={() => window.print()}
-              >
-                Print Booking
-              </button>
+          <p>
+            <strong>Slot:</strong> {booking.slot}
+          </p>
+        </div>
 
-              <Link to="/" className="home-btn">
-                Go To Home
-              </Link>
-            </div>
-          </>
-        )}
+        <div className="btn-group">
+          <button
+            className="print-btn"
+            onClick={() => window.print()}
+          >
+            Print Booking
+          </button>
+
+          <Link to="/" className="home-btn">
+            Go To Home
+          </Link>
+        </div>
+
       </div>
     </div>
   );

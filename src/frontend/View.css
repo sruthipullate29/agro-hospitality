@@ -14,6 +14,10 @@
   text-align: center;
 }
 
+.view-card-wide {
+  max-width: 820px;
+}
+
 .view-image {
   width: 100%;
   max-height: 320px;
@@ -26,6 +30,12 @@
   font-size: 1.4rem;
   color: #15803d;
   font-weight: bold;
+}
+
+.view-stock {
+  color: #047857;
+  font-weight: 600;
+  margin: 8px 0;
 }
 
 .view-desc {
@@ -43,27 +53,93 @@
   margin-bottom: 28px;
 }
 
+.order-form {
+  text-align: left;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.order-form h2 {
+  text-align: center;
+  color: #15803d;
+  margin-bottom: 4px;
+}
+
+.order-form h3 {
+  color: #374151;
+  margin: 20px 0 12px;
+}
+
+.order-form-note {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.order-full {
+  grid-column: 1 / -1;
+}
+
+.order-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.order-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
 .view-actions {
   display: flex;
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
+  margin-top: 24px;
 }
 
 .view-back,
-.view-contact {
+.view-order-btn {
   padding: 12px 20px;
   border-radius: 10px;
   text-decoration: none;
   font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .view-back {
   background: #e5e7eb;
   color: #111827;
+  display: inline-flex;
+  align-items: center;
 }
 
-.view-contact {
+.view-order-btn {
   background: #15803d;
   color: white;
+}
+
+.view-order-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
 }

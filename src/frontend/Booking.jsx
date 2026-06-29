@@ -1,9 +1,11 @@
 import "./Booking.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 function Booking() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const hotel = location.state?.hotel;
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -29,6 +31,11 @@ function Booking() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!hotel) {
+      alert("Please select a hotel from the Hospitality page first.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -37,7 +44,11 @@ function Booking() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          hotelName: hotel.name,
+          hotelPrice: hotel.price,
+        }),
       });
 
       const data = await res.json();
@@ -57,6 +68,22 @@ function Booking() {
     }
   };
 
+  if (!hotel) {
+    return (
+      <div className="booking-page">
+        <div className="booking-card">
+          <h1 className="booking-title">Hotel Reservation</h1>
+          <p className="booking-subtitle">
+            Please choose a hotel before booking.
+          </p>
+          <Link to="/hospitality" className="select-hotel-link">
+            Browse Hotels
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="booking-page">
       <div className="booking-card">
@@ -65,6 +92,14 @@ function Booking() {
         <p className="booking-subtitle">
           Complete your booking details
         </p>
+
+        <div className="hotel-summary">
+          <h3>{hotel.name}</h3>
+          <p>📍 {hotel.location}</p>
+          <p>
+            <b>Rate:</b> {hotel.price}
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <label>Name</label>
@@ -145,9 +180,7 @@ function Booking() {
             <option value="12 Hours (9 PM - 9 AM)">
               12 Hours (9 PM - 9 AM)
             </option>
-            <option value="24 Hours Stay">
-              24 Hours Stay
-            </option>
+            <option value="24 Hours Stay">24 Hours Stay</option>
           </select>
 
           <button type="submit" disabled={loading}>

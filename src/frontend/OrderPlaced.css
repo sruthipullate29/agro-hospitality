@@ -1,0 +1,78 @@
+.order-placed-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.order-placed-card {
+  width: 100%;
+  max-width: 620px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.order-placed-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;
+  color: #111827;
+}
+
+.tick {
+  color: #22c55e;
+}
+
+.order-id-box {
+  background: #ecfdf5;
+  color: #15803d;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+.order-details {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.order-details h3 {
+  color: #15803d;
+  margin: 16px 0 8px;
+}
+
+.order-details p {
+  margin: 6px 0;
+  color: #374151;
+}
+
+.order-placed-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.order-placed-btn {
+  padding: 12px 20px;
+  background: #15803d;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.order-placed-btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}

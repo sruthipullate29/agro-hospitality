@@ -6,6 +6,8 @@ import Hospitality from "./Hospitality";
 import Booking from "./Booking";
 import Founder from "./Founder";
 import ConfirmBooking from "./ConfirmBooking";
+import View from "./View";
+import OrderPlaced from "./OrderPlaced";
 
 function App() {
   return (
@@ -14,6 +16,12 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/agro" element={<Agro />} />
+
+        <Route path="/agro/:id" element={<View />} />
+
+        <Route path="/view/:id" element={<View />} />
+
+        <Route path="/order-placed" element={<OrderPlaced />} />
 
         <Route path="/hospitality" element={<Hospitality />} />
 

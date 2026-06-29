@@ -46,6 +46,12 @@
   border-radius: 10px;
 }
 
+.product-stock {
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 14px;
+}
+
 .product-card button {
   background: green;
   color: white;

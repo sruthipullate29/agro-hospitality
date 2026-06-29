@@ -19,8 +19,9 @@ function Agro() {
             <img src={product.image} alt={product.name} />
             <h3>{product.name}</h3>
             <p>{product.price}</p>
-            <Link to={`/view/${product.id}`}>
-              <button type="button">View Details</button>
+            <p className="product-stock">{product.stockKg} kg available</p>
+            <Link to={`/agro/${product.id}`}>
+              <button type="button">View Product</button>
             </Link>
           </div>
         ))}
