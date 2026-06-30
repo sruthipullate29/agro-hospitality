@@ -34,10 +34,15 @@ const productStock = {
 };
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
@@ -164,16 +169,40 @@ app.post("/agro-order", async (req, res) => {
     }
 
     if (email) {
-      await sendEmail(
-        email,
-        `Order Placed - ${orderId}`,
-        `
-        <h2>✅ Order Placed</h2>
-        <p>Hello ${name},</p>
-        <p>Your order has been placed successfully.</p>
-        <p><b>Order ID:</b> ${orderId}</p>
-        `
-      );
+      ares.json({
+        success: true,
+        booking: bookingData,
+      });
+      
+      // Owner email (background)
+      if (process.env.OWNER_EMAIL) {
+        sendEmail(
+          process.env.OWNER_EMAIL,
+          `New Booking - ${bookingId}`,
+          `
+          <h2>🆕 New Booking</h2>
+          <p><b>Booking ID:</b> ${bookingId}</p>
+          <p><b>Name:</b> ${booking.name}</p>
+          <p><b>Email:</b> ${booking.email}</p>
+          <p><b>Phone:</b> ${booking.phone}</p>
+          <p><b>Guests:</b> ${booking.guests}</p>
+          `
+        );
+      }
+      
+      // Customer email (background)
+      if (booking.email) {
+        sendEmail(
+          booking.email,
+          `Booking Confirmed - ${bookingId}`,
+          `
+          <h2>✅ Booking Confirmed</h2>
+          <p>Hello ${booking.name},</p>
+          <p>Your booking has been confirmed.</p>
+          <p><b>Booking ID:</b> ${bookingId}</p>
+          `
+        );
+      }
     }
 
     res.json({

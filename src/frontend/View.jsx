@@ -24,7 +24,7 @@ function View() {
   useEffect(() => {
     if (!product) return;
 
-    fetch(`http://localhost:5000/agro-stock/${product.id}`)
+    fetch(`https://agro-hospitality-1.onrender.com/agro-stock/${product.id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -43,15 +43,20 @@ function View() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/agro-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product.id,
-          productName: product.name,
-          ...form,
-        }),
-      });
+      const res = await fetch(
+        "https://agro-hospitality-1.onrender.com/agro-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: product.id,
+            productName: product.name,
+            ...form,
+          }),
+        }
+      );
 
       const data = await res.json();
 
