@@ -1,6 +1,7 @@
 import "./Booking.css";
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Booking() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function Booking() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/book", {
+      const res = await fetch(`${API_URL}/book`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
