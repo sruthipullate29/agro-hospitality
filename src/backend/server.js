@@ -7,7 +7,15 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://agro-hospitality.vercel.app",
+      "http://localhost:5173",],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Agro Hospitality Backend Running ✅");
@@ -168,43 +176,6 @@ app.post("/agro-order", async (req, res) => {
       );
     }
 
-    if (email) {
-      ares.json({
-        success: true,
-        booking: bookingData,
-      });
-      
-      // Owner email (background)
-      if (process.env.OWNER_EMAIL) {
-        sendEmail(
-          process.env.OWNER_EMAIL,
-          `New Booking - ${bookingId}`,
-          `
-          <h2>🆕 New Booking</h2>
-          <p><b>Booking ID:</b> ${bookingId}</p>
-          <p><b>Name:</b> ${booking.name}</p>
-          <p><b>Email:</b> ${booking.email}</p>
-          <p><b>Phone:</b> ${booking.phone}</p>
-          <p><b>Guests:</b> ${booking.guests}</p>
-          `
-        );
-      }
-      
-      // Customer email (background)
-      if (booking.email) {
-        sendEmail(
-          booking.email,
-          `Booking Confirmed - ${bookingId}`,
-          `
-          <h2>✅ Booking Confirmed</h2>
-          <p>Hello ${booking.name},</p>
-          <p>Your booking has been confirmed.</p>
-          <p><b>Booking ID:</b> ${bookingId}</p>
-          `
-        );
-      }
-    }
-
     res.json({
       success: true,
       order: orderData,
@@ -249,8 +220,13 @@ app.post("/book", async (req, res) => {
 
     bookings.push(bookingData);
 
+    res.json({
+      success: true,
+      booking: bookingData,
+    });
+    
     if (process.env.OWNER_EMAIL) {
-      await sendEmail(
+      sendEmail(
         process.env.OWNER_EMAIL,
         `New Booking - ${bookingId}`,
         `
@@ -259,28 +235,22 @@ app.post("/book", async (req, res) => {
         <p><b>Name:</b> ${booking.name}</p>
         <p><b>Email:</b> ${booking.email}</p>
         <p><b>Phone:</b> ${booking.phone}</p>
-        <p><b>Guests:</b> ${booking.guests}</p>
         `
       );
     }
-
+    
     if (booking.email) {
-      await sendEmail(
+      sendEmail(
         booking.email,
         `Booking Confirmed - ${bookingId}`,
         `
         <h2>✅ Booking Confirmed</h2>
-        <p>Hello ${booking.name},</p>
+        <p>Hello ${booking.name}</p>
         <p>Your booking has been confirmed.</p>
         <p><b>Booking ID:</b> ${bookingId}</p>
         `
       );
     }
-
-    res.json({
-      success: true,
-      booking: bookingData,
-    });
 
   } catch (err) {
     console.error(err);
