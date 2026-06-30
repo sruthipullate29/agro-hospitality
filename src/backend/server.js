@@ -2,15 +2,23 @@ import express from "express";
 import cors from "cors";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("Agro Hospitality Backend Running ✅");
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "Server is healthy",
+  });
+});
 
 let bookings = [];
 let bookingCounter = 1;
@@ -33,25 +41,49 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+transporter.verify((error) => {
+  if (error) {
+    console.log("Mail Error:", error.message);
+  } else {
+    console.log("Mail Server Ready ✅");
+  }
+});
+
 const sendEmail = async (to, subject, html) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    html,
-  });
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log("Email credentials missing");
+      return;
+    }
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html,
+    });
+
+    console.log(`Email sent to ${to}`);
+  } catch (error) {
+    console.log("Email Send Error:", error.message);
+  }
 };
+
 
 app.get("/agro-stock/:productId", (req, res) => {
   const stock = productStock[req.params.productId];
+
   if (stock === undefined) {
     return res.status(404).json({
       success: false,
-      message: "Product not found.",
+      message: "Product not found",
     });
   }
 
-  res.json({ success: true, stockKg: stock });
+  res.json({
+    success: true,
+    stockKg: stock,
+  });
 });
 
 app.post("/agro-order", async (req, res) => {
@@ -75,21 +107,21 @@ app.post("/agro-order", async (req, res) => {
     if (available === undefined) {
       return res.status(404).json({
         success: false,
-        message: "Product not found.",
+        message: "Product not found",
       });
     }
 
     if (!qty || qty <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Enter a valid quantity in kg.",
+        message: "Enter a valid quantity",
       });
     }
 
     if (qty > available) {
       return res.status(400).json({
         success: false,
-        message: `Only ${available} kg available for this product.`,
+        message: `Only ${available} kg available`,
       });
     }
 
@@ -115,11 +147,11 @@ app.post("/agro-order", async (req, res) => {
 
     agroOrders.push(orderData);
 
-    await sendEmail(
-      process.env.OWNER_EMAIL,
-      `New Agro Order - ${orderId}`,
-      `
-      <div style="font-family:Arial;padding:20px">
+    if (process.env.OWNER_EMAIL) {
+      await sendEmail(
+        process.env.OWNER_EMAIL,
+        `New Agro Order - ${orderId}`,
+        `
         <h2>🌾 New Agro Order</h2>
         <p><b>Order ID:</b> ${orderId}</p>
         <p><b>Product:</b> ${productName}</p>
@@ -127,36 +159,34 @@ app.post("/agro-order", async (req, res) => {
         <p><b>Name:</b> ${name}</p>
         <p><b>Email:</b> ${email}</p>
         <p><b>Phone:</b> ${phone}</p>
-        <p><b>Address:</b> ${address}</p>
-        <p><b>City:</b> ${city}</p>
-        <p><b>State:</b> ${state}</p>
-        <p><b>Pincode:</b> ${pincode}</p>
-      </div>
-      `
-    );
+        `
+      );
+    }
 
-    await sendEmail(
-      email,
-      `Order Placed - ${orderId}`,
-      `
-      <div style="font-family:Arial;padding:20px">
-        <h2 style="color:green">✅ Order Placed</h2>
-        <p>Hi <b>${name}</b>,</p>
-        <p>Your order for <b>${productName}</b> (${qty} kg) has been placed.</p>
+    if (email) {
+      await sendEmail(
+        email,
+        `Order Placed - ${orderId}`,
+        `
+        <h2>✅ Order Placed</h2>
+        <p>Hello ${name},</p>
+        <p>Your order has been placed successfully.</p>
         <p><b>Order ID:</b> ${orderId}</p>
-        <p><b>Delivery address:</b> ${address}, ${city}, ${state} - ${pincode}</p>
-        <br/>
-        <p>Thank you for choosing Varun Agro Exports ❤️</p>
-      </div>
-      `
-    );
+        `
+      );
+    }
 
-    res.json({ success: true, order: orderData });
+    res.json({
+      success: true,
+      order: orderData,
+    });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
+
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: err.message,
     });
   }
 });
@@ -174,66 +204,67 @@ app.post("/book", async (req, res) => {
     if (existingBooking) {
       return res.status(400).json({
         success: false,
-        message: "Selected slot is already booked for this date.",
+        message: "Selected slot is already booked",
       });
     }
 
-    const bookingId = "BK" + String(bookingCounter).padStart(4, "0");
+    const bookingId =
+      "BK" + String(bookingCounter).padStart(4, "0");
+
     bookingCounter++;
 
-    const bookingData = { bookingId, ...booking };
+    const bookingData = {
+      bookingId,
+      ...booking,
+    };
+
     bookings.push(bookingData);
 
-    await sendEmail(
-      process.env.OWNER_EMAIL,
-      `New Booking Received - ${bookingId}`,
-      `
-      <div style="font-family:Arial;padding:20px">
+    if (process.env.OWNER_EMAIL) {
+      await sendEmail(
+        process.env.OWNER_EMAIL,
+        `New Booking - ${bookingId}`,
+        `
         <h2>🆕 New Booking</h2>
         <p><b>Booking ID:</b> ${bookingId}</p>
         <p><b>Name:</b> ${booking.name}</p>
         <p><b>Email:</b> ${booking.email}</p>
         <p><b>Phone:</b> ${booking.phone}</p>
         <p><b>Guests:</b> ${booking.guests}</p>
-        <p><b>Check In:</b> ${booking.checkIn}</p>
-        <p><b>Check Out:</b> ${booking.checkOut}</p>
-        <p><b>Slot:</b> ${booking.slot}</p>
-        <p><b>Hotel:</b> ${booking.hotelName || "N/A"}</p>
-      </div>
-      `
-    );
+        `
+      );
+    }
 
-    await sendEmail(
-      booking.email,
-      `Booking Confirmed - ${bookingId}`,
-      `
-      <div style="font-family:Arial;padding:20px">
-        <h2 style="color:green">✅ Booking Confirmed</h2>
-        <p>Hi <b>${booking.name}</b>,</p>
-        <p>Your booking is confirmed successfully.</p>
-        <h3>Booking ID: ${bookingId}</h3>
-        <p><b>Check In:</b> ${booking.checkIn}</p>
-        <p><b>Check Out:</b> ${booking.checkOut}</p>
-        <p><b>Guests:</b> ${booking.guests}</p>
-        <p><b>Slot:</b> ${booking.slot}</p>
-        <p><b>Hotel:</b> ${booking.hotelName || "N/A"}</p>
-        <br/>
-        <p>Thank you for choosing us ❤️</p>
-      </div>
-      `
-    );
+    if (booking.email) {
+      await sendEmail(
+        booking.email,
+        `Booking Confirmed - ${bookingId}`,
+        `
+        <h2>✅ Booking Confirmed</h2>
+        <p>Hello ${booking.name},</p>
+        <p>Your booking has been confirmed.</p>
+        <p><b>Booking ID:</b> ${bookingId}</p>
+        `
+      );
+    }
 
     res.json({
       success: true,
       booking: bookingData,
     });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
+
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: err.message,
     });
   }
 });
 
-app.listen(5000, () => console.log("Server running on 5000"));
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT} 🚀`);
+});

@@ -8,11 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-
     "server": "node src/backend/server.js",
-    "start": "node src/backend/server.js",
-
-    "diagnose": "node scripts/diagnose-package.mjs"
+    "start": "node src/backend/server.js"
   },
 
   "dependencies": {

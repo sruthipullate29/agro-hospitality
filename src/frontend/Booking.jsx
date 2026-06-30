@@ -167,21 +167,42 @@ function Booking() {
           </div>
 
           <label>Slot</label>
-          <select
-            name="slot"
-            value={form.slot}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Slot</option>
-            <option value="12 Hours (9 AM - 9 PM)">
-              12 Hours (9 AM - 9 PM)
-            </option>
-            <option value="12 Hours (9 PM - 9 AM)">
-              12 Hours (9 PM - 9 AM)
-            </option>
-            <option value="24 Hours Stay">24 Hours Stay</option>
-          </select>
+<select
+  name="slot"
+  value={form.slot}
+  onChange={handleChange}
+  required
+>
+  <option value="">Select Slot</option>
+
+  {form.checkIn &&
+  form.checkOut &&
+  form.checkIn === form.checkOut ? (
+    <>
+      <option value="12 Hours (9 AM - 9 PM)">
+        12 Hours (9 AM - 9 PM)
+      </option>
+
+      <option value="24 Hours Stay">
+        24 Hours Stay
+      </option>
+    </>
+  ) : (
+    <>
+      <option value="12 Hours (9 AM - 9 PM)">
+        12 Hours (9 AM - 9 PM)
+      </option>
+
+      <option value="12 Hours (9 PM - 9 AM)">
+        12 Hours (9 PM - 9 AM)
+      </option>
+
+      <option value="24 Hours Stay">
+        24 Hours Stay
+      </option>
+       </>
+        )}
+        </select>
 
           <button type="submit" disabled={loading}>
             {loading ? "Processing..." : "Confirm Booking"}
