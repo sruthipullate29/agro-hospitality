@@ -8,7 +8,7 @@ import Founder from "./Founder";
 import ConfirmBooking from "./ConfirmBooking";
 import View from "./View";
 import OrderPlaced from "./OrderPlaced";
-
+import Explore from "./Explore";
 function App() {
   return (
     <BrowserRouter>
@@ -30,6 +30,9 @@ function App() {
         <Route path="/founder" element={<Founder />} />
 
         <Route path="/confirmbooking" element={<ConfirmBooking />} />
+
+        <Route path="/explore" element={<Explore />} />
+
       </Routes>
     </BrowserRouter>
   );

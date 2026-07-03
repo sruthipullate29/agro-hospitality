@@ -34,10 +34,11 @@ return (
         </Link>
       </div>
     </div>
-
-    <div className="founder-link">
-      <Link to="/founder">About Founder</Link>
-    </div>
+    <nav className="bottom-nav">
+  <Link to="/">🏠 Home</Link>
+  <Link to="/explore">🔍 Explore</Link>
+  <Link to="/founder">👤 Founder</Link>
+</nav>
   </div>
 );
 }
