@@ -42,38 +42,30 @@ const productStock = {
 };
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for port 465
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-transporter.verify((error) => {
-  if (error) {
-    console.log("Mail Error:", error.message);
-  } else {
-    console.log("Mail Server Ready ✅");
-  }
-});
-
 const sendEmail = async (to, subject, html) => {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log("Email credentials missing");
-      return;
-    }
-
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"Agro Hospitality" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
 
-    console.log(`Email sent to ${to}`);
+    console.log(`✅ Email sent to ${to}`);
+    return true;
+
   } catch (error) {
-    console.log("Email Send Error:", error.message);
+    console.error("❌ Email Error:", error);
+    return false;
   }
 };
 
@@ -215,37 +207,48 @@ app.post("/book", async (req, res) => {
 
     bookings.push(bookingData);
 
-    res.json({
-      success: true,
-      booking: bookingData,
-    });
-    
     if (process.env.OWNER_EMAIL) {
-      sendEmail(
+      await sendEmail(
         process.env.OWNER_EMAIL,
         `New Booking - ${bookingId}`,
         `
-        <h2>🆕 New Booking</h2>
+        <h2>New Booking Received</h2>
         <p><b>Booking ID:</b> ${bookingId}</p>
         <p><b>Name:</b> ${booking.name}</p>
         <p><b>Email:</b> ${booking.email}</p>
         <p><b>Phone:</b> ${booking.phone}</p>
+        <p><b>Check In:</b> ${booking.checkIn}</p>
+        <p><b>Check Out:</b> ${booking.checkOut}</p>
+        <p><b>Guests:</b> ${booking.guests}</p>
+        <p><b>Slot:</b> ${booking.slot}</p>
         `
       );
     }
-    
+
     if (booking.email) {
-      sendEmail(
+      await sendEmail(
         booking.email,
-        `Booking Confirmed - ${bookingId}`,
+        `Booking Confirmation - ${bookingId}`,
         `
-        <h2>✅ Booking Confirmed</h2>
-        <p>Hello ${booking.name}</p>
-        <p>Your booking has been confirmed.</p>
+        <h2>Booking Confirmed</h2>
+        <p>Hello ${booking.name},</p>
+        <p>Your booking has been successfully confirmed.</p>
+
         <p><b>Booking ID:</b> ${bookingId}</p>
+        <p><b>Check In:</b> ${booking.checkIn}</p>
+        <p><b>Check Out:</b> ${booking.checkOut}</p>
+        <p><b>Guests:</b> ${booking.guests}</p>
+        <p><b>Slot:</b> ${booking.slot}</p>
+
+        <p>Thank you for choosing Agro Hospitality.</p>
         `
       );
     }
+
+    res.json({
+      success: true,
+      booking: bookingData,
+    });
 
   } catch (err) {
     console.error(err);
