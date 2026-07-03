@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -9,7 +9,6 @@ console.log("EMAIL_PASS EXISTS:", !!process.env.EMAIL_PASS);
 console.log("OWNER_EMAIL:", process.env.OWNER_EMAIL);
 
 const app = express();
-
 app.use(
   cors({
     origin: [
@@ -44,30 +43,29 @@ const productStock = {
   "red-chilli": 1000,
 };
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+console.log("RESEND KEY EXISTS:", !!process.env.RESEND_API_KEY);
 
 const sendEmail = async (to, subject, html) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Agro Hospitality" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: "Agro Hospitality <onboarding@resend.dev>",
       to,
       subject,
       html,
     });
 
-    console.log("Email Sent:", info.messageId);
+    if (error) {
+      console.error("Resend Error:", error);
+      return false;
+    }
 
-  } catch (error) {
-    console.error("Email Error:", error.message);
-    console.error(error);
+    console.log("Email sent:", data);
+    return true;
+
+  } catch (err) {
+    console.error("Email Error:", err);
+    return false;
   }
 };
 
@@ -212,7 +210,7 @@ app.post("/book", async (req, res) => {
     });
 
     if (process.env.OWNER_EMAIL) {
-      await sendEmail(
+      sendEmail(
         process.env.OWNER_EMAIL,
         `New Booking - ${bookingId}`,
         `
@@ -230,7 +228,7 @@ app.post("/book", async (req, res) => {
     }
 
     if (booking.email) {
-      await sendEmail(
+     sendEmail(
         booking.email,
         `Booking Confirmation - ${bookingId}`,
         `
@@ -246,16 +244,9 @@ app.post("/book", async (req, res) => {
 
         <p>Thank you for choosing Agro Hospitality.</p>
         `
-      );
-    } transporter.verify((error, success) => {
-      if (error) {
-        console.log("SMTP ERROR:", error);
-      } else {
-        console.log("SMTP READY ✅");
-      }
-    });
+      );}
 
-  } catch (err) {
+  } catch(err) {
     console.error(err);
 
     res.status(500).json({
