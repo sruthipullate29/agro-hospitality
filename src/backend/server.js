@@ -4,6 +4,9 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS EXISTS:", !!process.env.EMAIL_PASS);
+console.log("OWNER_EMAIL:", process.env.OWNER_EMAIL);
 
 const app = express();
 
@@ -53,19 +56,18 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (to, subject, html) => {
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Agro Hospitality" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
 
-    console.log(`✅ Email sent to ${to}`);
-    return true;
+    console.log("Email Sent:", info.messageId);
 
   } catch (error) {
-    console.error("❌ Email Error:", error);
-    return false;
+    console.error("Email Error:", error.message);
+    console.error(error);
   }
 };
 
@@ -78,9 +80,7 @@ app.get("/agro-stock/:productId", (req, res) => {
       success: false,
       message: "Product not found",
     });
-  }
-
-  res.json({
+  }  res.json({
     success: true,
     stockKg: stock,
   });
@@ -206,6 +206,10 @@ app.post("/book", async (req, res) => {
     };
 
     bookings.push(bookingData);
+    res.json({
+      success: true,
+      booking: bookingData,
+    });
 
     if (process.env.OWNER_EMAIL) {
       await sendEmail(
@@ -243,11 +247,12 @@ app.post("/book", async (req, res) => {
         <p>Thank you for choosing Agro Hospitality.</p>
         `
       );
-    }
-
-    res.json({
-      success: true,
-      booking: bookingData,
+    } transporter.verify((error, success) => {
+      if (error) {
+        console.log("SMTP ERROR:", error);
+      } else {
+        console.log("SMTP READY ✅");
+      }
     });
 
   } catch (err) {
