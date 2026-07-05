@@ -178,6 +178,7 @@ app.post("/agro-order", async (req, res) => {
 
 app.post("/book", async (req, res) => {
   try {
+
     const booking = req.body;
 
     const existingBooking = bookings.find(
@@ -204,17 +205,22 @@ app.post("/book", async (req, res) => {
     };
 
     bookings.push(bookingData);
+
+    // SEND RESPONSE FAST
     res.json({
       success: true,
       booking: bookingData,
     });
 
+    // OWNER EMAIL
     if (process.env.OWNER_EMAIL) {
-      sendEmail(
+
+      await sendEmail(
         process.env.OWNER_EMAIL,
         `New Booking - ${bookingId}`,
         `
         <h2>New Booking Received</h2>
+
         <p><b>Booking ID:</b> ${bookingId}</p>
         <p><b>Name:</b> ${booking.name}</p>
         <p><b>Email:</b> ${booking.email}</p>
@@ -225,15 +231,21 @@ app.post("/book", async (req, res) => {
         <p><b>Slot:</b> ${booking.slot}</p>
         `
       );
+
+      console.log("Owner email sent");
     }
 
+    // CUSTOMER EMAIL
     if (booking.email) {
-     sendEmail(
+
+      await sendEmail(
         booking.email,
         `Booking Confirmation - ${bookingId}`,
         `
-        <h2>Booking Confirmed</h2>
+        <h2>Booking Confirmed ✅</h2>
+
         <p>Hello ${booking.name},</p>
+
         <p>Your booking has been successfully confirmed.</p>
 
         <p><b>Booking ID:</b> ${bookingId}</p>
@@ -244,9 +256,13 @@ app.post("/book", async (req, res) => {
 
         <p>Thank you for choosing Agro Hospitality.</p>
         `
-      );}
+      );
 
-  } catch(err) {
+      console.log("Customer email sent");
+    }
+
+  } catch (err) {
+
     console.error(err);
 
     res.status(500).json({
