@@ -60,11 +60,12 @@ const sendEmail = async (to, subject, html) => {
       return false;
     }
 
-    console.log("Email sent:", data);
+    console.log(`✅ Email sent to ${to}`);
+    console.log(data);
     return true;
 
   } catch (err) {
-    console.error("Email Error:", err);
+    console.error(err);
     return false;
   }
 };
@@ -212,54 +213,34 @@ app.post("/book", async (req, res) => {
       booking: bookingData,
     });
 
-    // OWNER EMAIL
-    if (process.env.OWNER_EMAIL) {
+    // Send to owner
+const ownerResult = await sendEmail(
+  process.env.OWNER_EMAIL,
+  `New Booking - ${bookingId}`,
+  `
+  <h2>New Booking</h2>
+  <p>Name: ${booking.name}</p>
+  <p>Email: ${booking.email}</p>
+  `
+);
 
-      await sendEmail(
-        process.env.OWNER_EMAIL,
-        `New Booking - ${bookingId}`,
-        `
-        <h2>New Booking Received</h2>
+console.log("Owner Email:", ownerResult);
 
-        <p><b>Booking ID:</b> ${bookingId}</p>
-        <p><b>Name:</b> ${booking.name}</p>
-        <p><b>Email:</b> ${booking.email}</p>
-        <p><b>Phone:</b> ${booking.phone}</p>
-        <p><b>Check In:</b> ${booking.checkIn}</p>
-        <p><b>Check Out:</b> ${booking.checkOut}</p>
-        <p><b>Guests:</b> ${booking.guests}</p>
-        <p><b>Slot:</b> ${booking.slot}</p>
-        `
-      );
+// Send to customer
+const customerResult = await sendEmail(
+  booking.email,
+  `Booking Confirmation - ${bookingId}`,
+  `
+  <h2>Booking Confirmed ✅</h2>
+  <p>Hello ${booking.name},</p>
+  <p>Your booking has been confirmed.</p>
+  <p><b>Booking ID:</b> ${bookingId}</p>
+  `
+);
 
-      console.log("Owner email sent");
-    }
-
-    // CUSTOMER EMAIL
-    if (booking.email) {
-
-      await sendEmail(
-        booking.email,
-        `Booking Confirmation - ${bookingId}`,
-        `
-        <h2>Booking Confirmed ✅</h2>
-
-        <p>Hello ${booking.name},</p>
-
-        <p>Your booking has been successfully confirmed.</p>
-
-        <p><b>Booking ID:</b> ${bookingId}</p>
-        <p><b>Check In:</b> ${booking.checkIn}</p>
-        <p><b>Check Out:</b> ${booking.checkOut}</p>
-        <p><b>Guests:</b> ${booking.guests}</p>
-        <p><b>Slot:</b> ${booking.slot}</p>
-
-        <p>Thank you for choosing Agro Hospitality.</p>
-        `
-      );
+console.log("Customer Email:", customerResult);
 
       console.log("Customer email sent");
-    }
 
   } catch (err) {
 
