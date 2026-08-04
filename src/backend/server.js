@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import { Resend } from "resend";
 import dotenv from "dotenv";
+import connectDB from "./db.js";
+import Booking from "./models/Booking.js";
+import AgroOrder from "./models/AgroOrder.js";
 
 dotenv.config();
 console.log("EMAIL_USER:", process.env.EMAIL_USER);
@@ -13,12 +16,14 @@ app.use(
   cors({
     origin: [
       "https://agro-hospitality.vercel.app",
-      "http://localhost:5173",],
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   })
 );
 app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Agro Hospitality Backend Running ✅");
 });
@@ -29,12 +34,6 @@ app.get("/health", (req, res) => {
     message: "Server is healthy",
   });
 });
-
-let bookings = [];
-let bookingCounter = 1;
-
-let agroOrders = [];
-let orderCounter = 1;
 
 const productStock = {
   "basmati-rice": 1000,
@@ -63,13 +62,11 @@ const sendEmail = async (to, subject, html) => {
     console.log(`✅ Email sent to ${to}`);
     console.log(data);
     return true;
-
   } catch (err) {
     console.error(err);
     return false;
   }
 };
-
 
 app.get("/agro-stock/:productId", (req, res) => {
   const stock = productStock[req.params.productId];
@@ -79,7 +76,8 @@ app.get("/agro-stock/:productId", (req, res) => {
       success: false,
       message: "Product not found",
     });
-  }  res.json({
+  }
+  res.json({
     success: true,
     stockKg: stock,
   });
@@ -124,8 +122,10 @@ app.post("/agro-order", async (req, res) => {
       });
     }
 
-    const orderId = "ORD" + String(orderCounter).padStart(4, "0");
-    orderCounter++;
+    // Generate next order ID based on existing orders
+    const lastOrder = await AgroOrder.findOne().sort({ _id: -1 });
+    const lastNum = lastOrder ? parseInt(lastOrder.orderId.replace("ORD", ""), 10) : 0;
+    const orderId = "ORD" + String(lastNum + 1).padStart(4, "0");
 
     productStock[productId] = available - qty;
 
@@ -144,7 +144,9 @@ app.post("/agro-order", async (req, res) => {
       remainingStockKg: productStock[productId],
     };
 
-    agroOrders.push(orderData);
+    // Persist to MongoDB
+    const newOrder = new AgroOrder(orderData);
+    await newOrder.save();
 
     if (process.env.OWNER_EMAIL) {
       await sendEmail(
@@ -166,10 +168,8 @@ app.post("/agro-order", async (req, res) => {
       success: true,
       order: orderData,
     });
-
   } catch (err) {
     console.error(err);
-
     res.status(500).json({
       success: false,
       message: err.message,
@@ -179,14 +179,13 @@ app.post("/agro-order", async (req, res) => {
 
 app.post("/book", async (req, res) => {
   try {
-
     const booking = req.body;
 
-    const existingBooking = bookings.find(
-      (b) =>
-        b.checkIn === booking.checkIn &&
-        b.slot === booking.slot
-    );
+    // Check for existing booking in MongoDB
+    const existingBooking = await Booking.findOne({
+      checkIn: booking.checkIn,
+      slot: booking.slot,
+    });
 
     if (existingBooking) {
       return res.status(400).json({
@@ -195,17 +194,19 @@ app.post("/book", async (req, res) => {
       });
     }
 
-    const bookingId =
-      "BK" + String(bookingCounter).padStart(4, "0");
-
-    bookingCounter++;
+    // Generate next booking ID based on existing bookings
+    const lastBooking = await Booking.findOne().sort({ _id: -1 });
+    const lastNum = lastBooking ? parseInt(lastBooking.bookingId.replace("BK", ""), 10) : 0;
+    const bookingId = "BK" + String(lastNum + 1).padStart(4, "0");
 
     const bookingData = {
       bookingId,
       ...booking,
     };
 
-    bookings.push(bookingData);
+    // Persist to MongoDB
+    const newBooking = new Booking(bookingData);
+    await newBooking.save();
 
     // SEND RESPONSE FAST
     res.json({
@@ -214,38 +215,34 @@ app.post("/book", async (req, res) => {
     });
 
     // Send to owner
-const ownerResult = await sendEmail(
-  process.env.OWNER_EMAIL,
-  `New Booking - ${bookingId}`,
-  `
-  <h2>New Booking</h2>
-  <p>Name: ${booking.name}</p>
-  <p>Email: ${booking.email}</p>
-  `
-);
+    const ownerResult = await sendEmail(
+      process.env.OWNER_EMAIL,
+      `New Booking - ${bookingId}`,
+      `
+      <h2>New Booking</h2>
+      <p>Name: ${booking.name}</p>
+      <p>Email: ${booking.email}</p>
+      `
+    );
 
-console.log("Owner Email:", ownerResult);
+    console.log("Owner Email:", ownerResult);
 
-// Send to customer
-const customerResult = await sendEmail(
-  booking.email,
-  `Booking Confirmation - ${bookingId}`,
-  `
-  <h2>Booking Confirmed ✅</h2>
-  <p>Hello ${booking.name},</p>
-  <p>Your booking has been confirmed.</p>
-  <p><b>Booking ID:</b> ${bookingId}</p>
-  `
-);
+    // Send to customer
+    const customerResult = await sendEmail(
+      booking.email,
+      `Booking Confirmation - ${bookingId}`,
+      `
+      <h2>Booking Confirmed ✅</h2>
+      <p>Hello ${booking.name},</p>
+      <p>Your booking has been confirmed.</p>
+      <p><b>Booking ID:</b> ${bookingId}</p>
+      `
+    );
 
-console.log("Customer Email:", customerResult);
-
-      console.log("Customer email sent");
-
+    console.log("Customer Email:", customerResult);
+    console.log("Customer email sent");
   } catch (err) {
-
     console.error(err);
-
     res.status(500).json({
       success: false,
       message: err.message,
@@ -255,6 +252,9 @@ console.log("Customer Email:", customerResult);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} 🚀`);
+// Connect to DB then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} 🚀`);
+  });
 });
